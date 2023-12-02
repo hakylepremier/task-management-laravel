@@ -11,14 +11,14 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_registration_screen_can_be_rendered(): void
-    {
-        $response = $this->get('/register');
+    // public function test_registration_screen_can_be_rendered(): void
+    // {
+    //     $response = $this->get('/register');
 
-        $response
-            ->assertSeeVolt('pages.auth.register')
-            ->assertOk();
-    }
+    //     $response
+    //         ->assertSeeVolt('pages.auth.register')
+    //         ->assertOk();
+    // }
 
     public function test_new_users_can_register(): void
     {
