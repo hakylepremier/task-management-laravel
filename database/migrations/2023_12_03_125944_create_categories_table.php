@@ -19,7 +19,7 @@ return new class extends Migration
             );
             $table->text(
                 'description'
-            );
+            )->nullable();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
