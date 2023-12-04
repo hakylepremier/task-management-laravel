@@ -30,6 +30,9 @@ $logout = function (Logout $logout) {
                     <x-nav-link :href="route('goals')" :active="request()->routeIs('goals')" wire:navigate>
                         {{ __('Goals') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('categories')" :active="request()->routeIs('categories')" wire:navigate>
+                        {{ __('Categories') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -92,6 +95,9 @@ $logout = function (Logout $logout) {
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('goals')" :active="request()->routeIs('goals')" wire:navigate>
                 {{ __('Goals') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('categories')" :active="request()->routeIs('categories')" wire:navigate>
+                {{ __('Categories') }}
             </x-responsive-nav-link>
         </div>
 
