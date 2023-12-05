@@ -1,8 +1,14 @@
 <?php
 
-use function Livewire\Volt\{state};
+use function Livewire\Volt\{state, mount};
 
-state(['title' => 'Sample Goal', 'category' => 'Some Category', 'date' => '28th Dec, 2023']);
+state(['title' => 'Sample Goal', 'category' => 'Some Category', 'date' => '28th Dec, 2023', 'goal' => null]);
+
+mount(function () {
+    $this->title = $this->goal->title;
+    $this->description = $this->goal->description;
+    $this->category = $this->goal->category->title;
+});
 
 ?>
 
