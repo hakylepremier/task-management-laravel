@@ -10,6 +10,10 @@ class Stage extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title'
+    ];
+
     public function goals(): HasMany
     {
         return $this->hasMany(Goal::class);

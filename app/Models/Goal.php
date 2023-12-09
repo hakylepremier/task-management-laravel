@@ -29,6 +29,7 @@ class Goal extends Model
     //  * @var array
     //  */
     protected $attributes = [
+        'image' => null,
         'category_id' => null,
     ];
 

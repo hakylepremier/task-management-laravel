@@ -18,6 +18,8 @@ state([
     'description' => '',
     'category' => null,
 ]);
+
+on(['goal-created' => $getGoals]);
 ?>
 
 <div>
@@ -27,10 +29,21 @@ state([
         </h2>
     </x-slot>
 
+    <div x-data="{ openedIndex: true }" class="px-8 py-6 mx-auto max-w-7xl">
+        <div @click="openedIndex = !openedIndex" class="inline-block border text-gray-200 p-4 cursor-pointer select-none">
+            Create Goal
+        </div>
+        {{-- <template x-show="openedIndex"> --}}
+        <div x-show.transition.in.duration.800ms="openedIndex" x-cloak class="border p-4">
+            <livewire:goals.create />
+        </div>
+        {{-- </template> --}}
+    </div>
+
     {{-- <section class="px-4 py-6 mx-auto max-w-7xl">
         <livewire:goals.create />
     </section> --}}
-    <section class="w-full px-4 pb-4 mx-auto mb-12 border-red-400 xl:max-w-7xl xl:mb-0">
+    <section class="w-full px-4 pb-4 mx-auto mb-12 border-red-400 xl:max-w-7xl xl:mb-0 grid grid-cols-1 md:grid-cols-4">
         @forelse ($goals as $goal)
             <livewire:goals.goal :goal="$goal">
             @empty
