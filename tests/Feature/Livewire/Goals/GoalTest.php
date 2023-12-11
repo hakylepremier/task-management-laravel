@@ -50,7 +50,26 @@ class GoalTest extends TestCase
         $component->assertSee($goal->title);
         $component->assertSee($category->title);
         // $goalArr = $goal->toArray();
+    }
 
 
+    public function test_goal_can_be_deleted_on_goal_component()
+    {
+        $this->actingAs($this->user);
+        $goal = [
+            'title' => 'A fake title',
+            'stage_id' => Stage::factory()->create(['title' => 'Processing'])->id,
+        ];
+
+        $this->user->goals()->create($goal);
+
+        $this->assertDatabaseCount('goals', 1);
+
+        $lastgoal = Goal::where($goal)->first();
+        $component = Volt::test('goals.goal', ['goal' => $lastgoal])
+            ->call('delete', $lastgoal->id);
+
+        $this->assertDatabaseMissing('goals', $goal);
+        $this->assertDatabaseCount('goals', 0);
     }
 }

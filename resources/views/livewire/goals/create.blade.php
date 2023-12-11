@@ -87,8 +87,7 @@ $store = function () use ($getCategories) {
         </div>
         <div>
             <x-input-label for="end_date" :value="__('End Date')" />
-            <input wire:model="end_date" id="end_date" type="date" value="{{ now() }}" name="end_date"
-                required />
+            <input wire:model="end_date" id="end_date" type="date" value="" name="end_date" />
             <x-input-error :messages="$errors->get('title')" class="mt-2" />
         </div>
         <x-primary-button class="mt-4">{{ __('Save') }}</x-primary-button>

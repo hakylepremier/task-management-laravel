@@ -19,7 +19,19 @@ state([
     'category' => null,
 ]);
 
-on(['goal-created' => $getGoals]);
+on([
+    'goal-created' => $getGoals,
+    'goal-deleted' => function () use ($getGoals) {
+        $getGoals;
+        // $test = auth()
+        //     ->user()
+        //     ->goals()
+        //     ->with('category')
+        //     ->latest()
+        //     ->get();
+        // dd($test);
+    },
+]);
 ?>
 
 <div>
@@ -29,7 +41,7 @@ on(['goal-created' => $getGoals]);
         </h2>
     </x-slot>
 
-    <div x-data="{ openedIndex: true }" class="px-8 py-6 mx-auto max-w-7xl">
+    <div x-data="{ openedIndex: false }" class="px-8 py-6 mx-auto max-w-7xl">
         <div @click="openedIndex = !openedIndex" class="inline-block border text-gray-200 p-4 cursor-pointer select-none">
             Create Goal
         </div>
@@ -45,7 +57,7 @@ on(['goal-created' => $getGoals]);
     </section> --}}
     <section class="w-full px-4 pb-4 mx-auto mb-12 border-red-400 xl:max-w-7xl xl:mb-0 grid grid-cols-1 md:grid-cols-4">
         @forelse ($goals as $goal)
-            <livewire:goals.goal :goal="$goal">
+            <livewire:goals.goal :goal="$goal" :key="$goal->id">
             @empty
                 <div>
                     <p>{{ __('You have not added any goals') }}</p>

@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Goal;
+
 use function Livewire\Volt\{state, mount};
 
 state(['title' => 'Sample Goal', 'category' => 'Some Category', 'date' => '28th Dec, 2023', 'goal' => null]);
@@ -7,8 +9,17 @@ state(['title' => 'Sample Goal', 'category' => 'Some Category', 'date' => '28th 
 mount(function () {
     $this->title = $this->goal->title;
     $this->description = $this->goal->description;
-    $this->category = $this->goal->category->title;
+    $this->category = $this->goal->category ? $this->goal->category->title : 'No category';
 });
+
+$delete = function (Goal $goal) {
+    $this->authorize('delete', $goal);
+
+    $goal->delete();
+
+    $this->dispatch('goal-deleted');
+    // $this->disableEditing();
+};
 
 ?>
 
@@ -40,6 +51,12 @@ mount(function () {
                 </h3>
             </div>
         </div>
+
+        <x-danger-button class="ms-3" wire:click="delete({{ $goal->id }})"
+            wire:confirm="Are you sure to delete this goal? '{{ $title }}'?">
+            {{ __('Delete') }}
+        </x-danger-button>
+
         <button
             class="w-full px-4 py-2 text-sm text-gray-400 transition duration-300 ease-in-out bg-gray-900 rounded-md hover:bg-indigo-600 hover:text-gray-100">
             View Tasks
