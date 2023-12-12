@@ -18,6 +18,8 @@ Route::view('/', 'welcome');
 
 Volt::route('/goals', 'goals.index')->middleware(['auth', 'verified'])->name('goals');
 
+Volt::route('/goals/{goal}', 'goals.show')->middleware(['auth', 'verified'])->name('goals.show');
+
 Volt::route('/categories', 'category.index')->middleware(['auth', 'verified'])->name('categories');
 
 Route::view('dashboard', 'dashboard')

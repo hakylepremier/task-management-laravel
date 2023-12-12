@@ -42,7 +42,7 @@ class GoalIndexTest extends TestCase
         $response->assertStatus(200)->assertSeeVolt('goals.index');
     }
 
-    public function test_unauthorised_user_going_to_category_is_redirected_to_login_route(): void
+    public function test_unauthorised_user_going_to_goals_is_redirected_to_login_route(): void
     {
         $response = $this->get('/goals');
 

@@ -39,16 +39,18 @@ $delete = function (Goal $goal) {
             </div> --}}
             <div class="text-gray-200">
                 <p class="text-sm">{{ $category }}</p>
-                <h3 class="text-2xl font-semibold ">
-                    {{ $title }}
-                    {{-- <span class="flex items-center text-sm font-medium text-green-500">
+                <a href="{{ route('goals.show', $goal) }}" class="block">
+                    <h3 class="text-2xl font-semibold ">
+                        {{ $title }}
+                        {{-- <span class="flex items-center text-sm font-medium text-green-500">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
                         </svg>
                         122
                     </span> --}}
-                </h3>
+                    </h3>
+                </a>
             </div>
         </div>
 

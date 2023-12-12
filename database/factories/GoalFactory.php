@@ -22,8 +22,8 @@ class GoalFactory extends Factory
         return [
             'title' => fake()->realText(15),
             'description' => fake()->realText(200),
-            'image' => fake()->image(),
-            'category_id' => Category::factory(),
+            'image' => null,
+            'category_id' => null,
             'stage_id' => Stage::firstOrCreate(['title' => 'Processing']),
             'end_date' => fake()->dateTimeBetween('+1 month', '+2 months'),
         ];
