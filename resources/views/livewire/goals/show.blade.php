@@ -79,9 +79,9 @@ on([
     </header>
 
 
-    <section class="text-white px-8 py-6 mx-auto max-w-7xl">
+    <section class="px-8 py-6 mx-auto text-white max-w-7xl">
         @if ($description)
-            <p class="bg-indigo-500 px-8 py-6 rounded-xl">{{ $description }}</p>
+            <p class="px-8 py-6 bg-indigo-500 rounded-xl">{{ $description }}</p>
         @else
             <p class="text-center">No description provided</p>
         @endif
@@ -92,15 +92,16 @@ on([
                     class="{{ $day_warn_color }}">{{ $num_days_left }}</span>)
             </p>
         @else
-            <p class="text-center pt-6">No completion date given.</p>
+            <p class="pt-6 text-center">No completion date given.</p>
         @endif
     </section>
 
     <div x-data="{ openedIndex: false }" class="px-8 mx-auto max-w-7xl">
         <div x-on:click="isModalOpen = true"
-            class="inline-flex items-center px-4 py-2 bg-gray-200 dark:bg-gray-900 border border-white rounded-md font-semibold text-xs text-gray-800 dark:text-white uppercase tracking-widest hover:bg-white dark:hover:bg-gray-700 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 cursor-pointer">
-            Create Goal
+            class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-gray-800 uppercase transition duration-150 ease-in-out bg-gray-200 border border-white rounded-md cursor-pointer dark:bg-gray-900 dark:text-white hover:bg-white dark:hover:bg-gray-700 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+            Edit Goal
         </div>
         <livewire:goals.edit :goal="$goal" />
     </div>
+
 </div>
