@@ -40,7 +40,8 @@ class GoalShowTest extends TestCase
 
     public function test_goal_show_can_render(): void
     {
-        $component = Volt::test('goals.show');
+        $this->actingAs($this->user);
+        $component = Volt::test('goals.show', [$this->goal]);
 
         $component->assertSee('');
     }
