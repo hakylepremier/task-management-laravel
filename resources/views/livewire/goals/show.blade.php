@@ -7,6 +7,12 @@ use function Livewire\Volt\{layout, mount, state, on, rules};
 
 layout('layouts.app');
 
+$getTasks = fn() => ($this->tasks = auth()
+    ->user()
+    ->tasks()
+    ->latest()
+    ->get());
+
 $dateRemark = function ($my_end_date) {
     $date = Carbon::parse($my_end_date);
     $days = $date->diffInDays(now());
@@ -40,11 +46,17 @@ mount(function (Goal $goal) {
 state([
     'goal' => null,
     'title' => '',
+    'state' => ['do' => 'To do', 'progress' => 'In Progress', 'done' => 'Done'],
     'description' => null,
     'category' => null,
     'end_date' => null,
     'num_days_left' => 0,
     'day_warn_color' => 'text-white',
+    'tasks' => $getTasks,
+    'test' => [
+        'title' => 'yes',
+        'class' => 'bg-red-500',
+    ],
 ]);
 
 on([
@@ -103,5 +115,88 @@ on([
         </div>
         <livewire:goals.edit :goal="$goal" />
     </div>
+
+    <main class="px-8 mx-auto max-w-7xl flex gap-8 mt-6">
+        <div class="w-1/3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">To do</h3>
+                <livewire:tasks.create :state="$state['do']" :goal="$goal" />
+            </div>
+            <section class="flex flex-col gap-4">
+                @forelse ($tasks as $task)
+                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
+                        <x-slot:menu>
+                            <x-dropdown right>
+                                <x-slot:trigger>
+                                    <x-button icon="o-ellipsis-vertical"
+                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
+                                </x-slot:trigger>
+
+                                <x-menu-item title="Edit" />
+                                <x-menu-item title="Delete" />
+                            </x-dropdown>
+                        </x-slot:menu>
+
+                    </x-card>
+                @empty
+                    <p class="text-center">No task available</p>
+                @endforelse
+            </section>
+        </div>
+        <div class="w-1/3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">{{ $state['progress'] }}</h3>
+                <livewire:tasks.create :state="$state['progress']" :goal="$goal" />
+            </div>
+            <section class="flex flex-col gap-4">
+                @forelse ($tasks as $task)
+                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
+                        <x-slot:menu>
+                            <x-dropdown right>
+                                <x-slot:trigger>
+                                    <x-button icon="o-ellipsis-vertical"
+                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
+                                </x-slot:trigger>
+
+                                <x-menu-item title="Edit" />
+                                <x-menu-item title="Delete" />
+                            </x-dropdown>
+                        </x-slot:menu>
+
+                    </x-card>
+                @empty
+                    <p class="text-center">No task available</p>
+                @endforelse
+            </section>
+        </div>
+        <div class="w-1/3">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold">{{ $state['done'] }}</h3>
+                <livewire:tasks.create :state="$state['done']" />
+            </div>
+            <section class="flex flex-col gap-4">
+                @forelse ($tasks as $task)
+                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
+                        <x-slot:menu>
+                            <x-dropdown right>
+                                <x-slot:trigger>
+                                    <x-button icon="o-ellipsis-vertical"
+                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
+                                </x-slot:trigger>
+
+                                <x-menu-item title="Edit" />
+                                <x-menu-item title="Delete" />
+                            </x-dropdown>
+                        </x-slot:menu>
+
+                    </x-card>
+                @empty
+                    <p class="text-center">No task available</p>
+                @endforelse
+            </section>
+        </div>
+    </main>
+
+
 
 </div>
