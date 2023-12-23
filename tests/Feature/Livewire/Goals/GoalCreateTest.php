@@ -26,7 +26,7 @@ class GoalCreateTest extends TestCase
         $this->user = $this->createUser();
     }
 
-    public function test_it_can_render(): void
+    public function test_goal_create_component_can_render(): void
     {
         $this->actingAs($this->user);
         $component = Volt::test('goals.create');
