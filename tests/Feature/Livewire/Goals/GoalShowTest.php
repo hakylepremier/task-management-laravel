@@ -5,6 +5,7 @@ namespace Tests\Feature\Livewire\Goals;
 use App\Models\Category;
 use App\Models\Goal;
 use App\Models\Stage;
+use App\Models\Task;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -87,4 +88,35 @@ class GoalShowTest extends TestCase
     }
 
     // TODO: add a feature that prevents users from visiting other users goal route
+
+    public function test_task_card_can_render(): void
+    {
+        $task = Task::factory()->create(['user_id' => $this->user->id]);
+        $this->actingAs($this->user);
+        $component = Volt::test('tasks.components.task-card', [$task]);
+
+        $component->assertSee('');
+    }
+
+    public function test_newly_created_task_can_be_seen_on_goal_show_component(): void
+    {
+        $this->actingAs($this->user);
+        $task = Task::factory()->make()->toArray();
+        // $this->user->goals()->create($goal);
+        // $response = $this->actingAs($this->user)->get("goals/" . $this->goal->id);
+        $component = Volt::test('goals.show', [$this->goal]);
+
+        $component->assertDontSee($task['title']);
+        $component->assertDontSee($task['description']);
+
+        $this->goal->tasks()->create($task);
+
+        $component->dispatch('task-created');
+
+        // TODO: rewrite title assertion and description assertion
+        $component->assertSee($task['title'], false);
+        // $component->assertSee($task['description']);
+
+        $component->assertStatus(200)->assertSeeVolt('tasks.components.task-card');
+    }
 }

@@ -1,17 +1,23 @@
 <?php
 
 use App\Models\Goal;
+use App\Models\State;
 use Carbon\Carbon;
 
 use function Livewire\Volt\{layout, mount, state, on, rules};
 
 layout('layouts.app');
 
-$getTasks = fn() => ($this->tasks = auth()
-    ->user()
-    ->tasks()
-    ->latest()
-    ->get());
+// $getTasks = fn() => ($this->tasks = auth()
+//     ->user()
+//     ->tasks()
+//     ->latest()
+//     ->get());
+
+// $getTasks = fn() => ($this->tasks = $this->goal
+//     ->tasks()
+//     ->latest()
+//     ->get());
 
 $dateRemark = function ($my_end_date) {
     $date = Carbon::parse($my_end_date);
@@ -39,6 +45,10 @@ mount(function (Goal $goal) {
     $this->category = $goal->category ? $goal->category : null;
     $this->end_date = $goal->end_date ? Carbon::parse($goal->end_date)->format('Y-m-d') : null;
 
+    $this->tasks = $goal
+        ->tasks()
+        ->latest()
+        ->get();
     // $this->dateRemark('2024-01-01');
     $this->dateRemark($goal->end_date);
 });
@@ -46,13 +56,18 @@ mount(function (Goal $goal) {
 state([
     'goal' => null,
     'title' => '',
-    'state' => ['do' => 'To do', 'progress' => 'In Progress', 'done' => 'Done'],
+    'state' => [
+        'do' => State::firstOrNew(['title' => 'To do']),
+        'progress' => State::firstOrNew(['title' => 'In Progress']),
+        'done' => State::firstOrNew(['title' => 'Done']),
+    ],
     'description' => null,
     'category' => null,
     'end_date' => null,
     'num_days_left' => 0,
     'day_warn_color' => 'text-white',
-    'tasks' => $getTasks,
+    'tasks' => [],
+    // 'tasks' => $getTasks,
     'test' => [
         'title' => 'yes',
         'class' => 'bg-red-500',
@@ -74,6 +89,12 @@ on([
         $this->dateRemark($this->end_date);
         // dd($this->goal->toArray());
     },
+    'task-created' => function () {
+        $this->tasks = $this->goal
+            ->tasks()
+            ->latest()
+            ->get();
+    },
 ]);
 
 ?>
@@ -89,7 +110,6 @@ on([
             </div>
         </div>
     </header>
-
 
     <section class="px-8 py-6 mx-auto text-white max-w-7xl">
         @if ($description)
@@ -114,82 +134,50 @@ on([
             Edit Goal
         </div>
         <livewire:goals.edit :goal="$goal" />
+        {{-- <livewire:tasks.components.task-card /> --}}
     </div>
 
-    <main class="px-8 mx-auto max-w-7xl flex gap-8 mt-6">
+    <main class="flex gap-8 px-8 pb-4 mx-auto mt-6 max-w-7xl">
         <div class="w-1/3">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center justify-between mb-4">
                 <h3 class="text-lg font-bold">To do</h3>
-                <livewire:tasks.create :state="$state['do']" :goal="$goal" />
+                <livewire:tasks.create :state="$state['do']->title" :goal="$goal" />
             </div>
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
-                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
-                        <x-slot:menu>
-                            <x-dropdown right>
-                                <x-slot:trigger>
-                                    <x-button icon="o-ellipsis-vertical"
-                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
-                                </x-slot:trigger>
-
-                                <x-menu-item title="Edit" />
-                                <x-menu-item title="Delete" />
-                            </x-dropdown>
-                        </x-slot:menu>
-
-                    </x-card>
+                    @if ($task->state_id === $state['do']->id)
+                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
+                    @endif
                 @empty
                     <p class="text-center">No task available</p>
                 @endforelse
             </section>
         </div>
         <div class="w-1/3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">{{ $state['progress'] }}</h3>
-                <livewire:tasks.create :state="$state['progress']" :goal="$goal" />
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold">{{ $state['progress']->title }}</h3>
+                <livewire:tasks.create :state="$state['progress']->title" :goal="$goal" />
             </div>
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
-                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
-                        <x-slot:menu>
-                            <x-dropdown right>
-                                <x-slot:trigger>
-                                    <x-button icon="o-ellipsis-vertical"
-                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
-                                </x-slot:trigger>
-
-                                <x-menu-item title="Edit" />
-                                <x-menu-item title="Delete" />
-                            </x-dropdown>
-                        </x-slot:menu>
-
-                    </x-card>
+                    @if ($task->state_id === $state['progress']->id)
+                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
+                    @endif
                 @empty
                     <p class="text-center">No task available</p>
                 @endforelse
             </section>
         </div>
         <div class="w-1/3">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">{{ $state['done'] }}</h3>
-                <livewire:tasks.create :state="$state['done']" />
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold">{{ $state['done']->title }}</h3>
+                <livewire:tasks.create :state="$state['done']->title" />
             </div>
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
-                    <x-card class="bg-gray-800" title="{{ $task->title }}" subtitle="{{ $task->description }}">
-                        <x-slot:menu>
-                            <x-dropdown right>
-                                <x-slot:trigger>
-                                    <x-button icon="o-ellipsis-vertical"
-                                        class="cursor-pointer bg-transparent border-transparent hover:bg-gray-900 btn-square btn-sm" />
-                                </x-slot:trigger>
-
-                                <x-menu-item title="Edit" />
-                                <x-menu-item title="Delete" />
-                            </x-dropdown>
-                        </x-slot:menu>
-
-                    </x-card>
+                    @if ($task->state_id === $state['done']->id)
+                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
+                    @endif
                 @empty
                     <p class="text-center">No task available</p>
                 @endforelse

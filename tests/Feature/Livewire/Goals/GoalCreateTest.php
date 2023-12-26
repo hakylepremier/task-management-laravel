@@ -38,11 +38,12 @@ class GoalCreateTest extends TestCase
     {
         $title = 'A fake title';
         $description = fake()->realText(200);
+        $end_date = today()->addWeek(2);
         $goal = [
             'title' => $title,
             'description' => $description,
             'category_id' => $this->user->categories()->create(['title' => 'Cat Title'])->id,
-            'end_date' => Carbon::now()->addWeek(2),
+            'end_date' => $end_date,
         ];
 
         $this->actingAs($this->user);
@@ -65,7 +66,7 @@ class GoalCreateTest extends TestCase
         $this->assertEquals($goal['title'], $lastGoal->title);
         $this->assertEquals($goal['description'], $lastGoal->description);
         $this->assertEquals($goal['category_id'], $lastGoal->category_id);
-        $this->assertEquals($goal['end_date'], $lastGoal->end_date);
+        $this->assertEquals($end_date, $lastGoal->end_date);
     }
 
     public function test_goal_create_can_create_a_new_goal_with_only_required_fields(): void
