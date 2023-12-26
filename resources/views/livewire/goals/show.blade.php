@@ -90,6 +90,10 @@ on([
         // dd($this->goal->toArray());
     },
     'task-created' => function () {
+        $this->goal = $this->goal->refresh();
+        $this->tasks = $this->goal->tasks()->get();
+    },
+    'task-deleted' => function () {
         $this->tasks = $this->goal
             ->tasks()
             ->latest()
@@ -145,11 +149,14 @@ on([
             </div>
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
-                    @if ($task->state_id === $state['do']->id)
-                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
-                    @endif
+                    <div>
+                        @if ($task->state_id === $state['do']->id)
+                            <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
+                        @endif
+                    </div>
                 @empty
-                    <p class="text-center">No task available</p>
+                    <p class="text-center">No
+                        task available</p>
                 @endforelse
             </section>
         </div>
@@ -161,7 +168,7 @@ on([
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
                     @if ($task->state_id === $state['progress']->id)
-                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
+                        <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
                     @endif
                 @empty
                     <p class="text-center">No task available</p>
@@ -176,7 +183,7 @@ on([
             <section class="flex flex-col gap-4">
                 @forelse ($tasks as $task)
                     @if ($task->state_id === $state['done']->id)
-                        <livewire:tasks.components.task-card :task="$task" :key="$task->id" />
+                        <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
                     @endif
                 @empty
                     <p class="text-center">No task available</p>

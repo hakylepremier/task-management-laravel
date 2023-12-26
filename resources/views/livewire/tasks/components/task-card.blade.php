@@ -4,8 +4,11 @@ use App\Models\Task;
 use App\Models\State;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Mary\Traits\Toast;
 
-use function Livewire\Volt\{state, mount};
+use function Livewire\Volt\{state, mount, uses, on};
+
+uses([Toast::class]);
 
 state([
     'task' => null,
@@ -34,6 +37,17 @@ mount(function (Task $task) {
     $this->state_id = $task->state->id;
     $this->states = State::whereIn('title', ['To do', 'In progress', 'Done'])->get();
 });
+
+$delete = function (Task $task) {
+    $this->authorize('delete', $task);
+
+    $task->delete();
+
+    $this->dispatch('task-deleted');
+    // $this->disableEditing();
+};
+
+on(['task-created' => 'render', 'task-deleted' => 'render']);
 
 ?>
 
@@ -71,8 +85,11 @@ mount(function (Task $task) {
                     <x-menu-item title="Archives" icon="o-archive-box" /> --}}
                 </x-menu-sub>
 
+                {{-- <livewire:tasks.components.task-delete /> --}}
                 <x-menu-item title="Edit" />
-                <x-menu-item title="Delete" />
+                <x-menu-item title="Delete" wire:click="delete({{ $task->id }})"
+                    wire:confirm="Are you sure to delete the task titled '{{ $task->title }}'"
+                    wire:loading.attr="disabled" class="bg-red-500" />
             </x-dropdown>
         </x-slot:menu>
         <div class="flex items-center justify-between">
