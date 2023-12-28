@@ -50,17 +50,25 @@ mount(function (Goal $goal) {
         ->latest()
         ->get();
     // $this->dateRemark('2024-01-01');
+    // HACK: makes sure that default states are in the db after mounting
+    $state1 = State::firstOrCreate(['title' => 'To do']);
+    $state2 = State::firstOrCreate(['title' => 'In Progress']);
+    $state3 = State::firstOrCreate(['title' => 'Done']);
+
+    // HACK: change this to allow for showing other states in future.
+    $this->states = State::whereIn('title', ['To do', 'In Progress', 'Done'])->get();
     $this->dateRemark($goal->end_date);
 });
 
 state([
     'goal' => null,
     'title' => '',
-    'state' => [
-        'do' => State::firstOrNew(['title' => 'To do']),
-        'progress' => State::firstOrNew(['title' => 'In Progress']),
-        'done' => State::firstOrNew(['title' => 'Done']),
-    ],
+    // 'state' => [
+    //     'do' => State::firstOrNew(['title' => 'To do']),
+    //     'progress' => State::firstOrNew(['title' => 'In Progress']),
+    //     'done' => State::firstOrNew(['title' => 'Done']),
+    // ],
+    'states' => [],
     'description' => null,
     'category' => null,
     'end_date' => null,
@@ -89,16 +97,16 @@ on([
         $this->dateRemark($this->end_date);
         // dd($this->goal->toArray());
     },
-    'task-created' => function () {
-        $this->goal = $this->goal->refresh();
-        $this->tasks = $this->goal->tasks()->get();
-    },
-    'task-deleted' => function () {
-        $this->tasks = $this->goal
-            ->tasks()
-            ->latest()
-            ->get();
-    },
+    // 'task-created' => function ($state) {
+    //     $this->goal = $this->goal->refresh();
+    //     $this->tasks = $this->goal->tasks()->get();
+    // },
+    // 'task-deleted' => function () {
+    //     $this->tasks = $this->goal
+    //         ->tasks()
+    //         ->latest()
+    //         ->get();
+    // },
 ]);
 
 ?>
@@ -142,56 +150,11 @@ on([
     </div>
 
     <main class="flex gap-8 px-8 pb-4 mx-auto mt-6 max-w-7xl">
-        <div class="w-1/3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold">To do</h3>
-                <livewire:tasks.create :state="$state['do']->title" :goal="$goal" />
+        @foreach ($states as $state)
+            <div class="w-1/3" :key="{{ $state->id }}">
+                <livewire:tasks.components.task-list :goal="$goal" :state="$state->id" :states="$states"
+                    :key="$state->id" />
             </div>
-            <section class="flex flex-col gap-4">
-                @forelse ($tasks as $task)
-                    <div>
-                        @if ($task->state_id === $state['do']->id)
-                            <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
-                        @endif
-                    </div>
-                @empty
-                    <p class="text-center">No
-                        task available</p>
-                @endforelse
-            </section>
-        </div>
-        <div class="w-1/3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold">{{ $state['progress']->title }}</h3>
-                <livewire:tasks.create :state="$state['progress']->title" :goal="$goal" />
-            </div>
-            <section class="flex flex-col gap-4">
-                @forelse ($tasks as $task)
-                    @if ($task->state_id === $state['progress']->id)
-                        <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
-                    @endif
-                @empty
-                    <p class="text-center">No task available</p>
-                @endforelse
-            </section>
-        </div>
-        <div class="w-1/3">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold">{{ $state['done']->title }}</h3>
-                <livewire:tasks.create :state="$state['done']->title" />
-            </div>
-            <section class="flex flex-col gap-4">
-                @forelse ($tasks as $task)
-                    @if ($task->state_id === $state['done']->id)
-                        <livewire:tasks.components.task-card :task="$task" wire:key="{{ $task->id }}" />
-                    @endif
-                @empty
-                    <p class="text-center">No task available</p>
-                @endforelse
-            </section>
-        </div>
+        @endforeach
     </main>
-
-
-
 </div>

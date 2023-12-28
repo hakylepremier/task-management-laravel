@@ -25,7 +25,7 @@ state([
     // ],
 ]);
 
-mount(function (Task $task) {
+mount(function (Task $task, $states) {
     $this->task = $task;
     $this->updated_at = $task->updated_at;
     $this->date = Carbon::parse($task->updated_at)->diffForHumans(now(), [
@@ -35,7 +35,8 @@ mount(function (Task $task) {
 
     $this->state = $task->state;
     $this->state_id = $task->state->id;
-    $this->states = State::whereIn('title', ['To do', 'In progress', 'Done'])->get();
+    // $this->states = State::whereIn('title', ['To do', 'In progress', 'Done'])->get();
+    $this->states = $states;
 });
 
 $delete = function (Task $task) {
@@ -44,10 +45,12 @@ $delete = function (Task $task) {
     $task->delete();
 
     $this->dispatch('task-deleted');
+
+    $this->success('Task Deleted successfully.');
     // $this->disableEditing();
 };
 
-on(['task-created' => 'render', 'task-deleted' => 'render']);
+on(['task-created' => 'render']);
 
 ?>
 
@@ -56,8 +59,7 @@ on(['task-created' => 'render', 'task-deleted' => 'render']);
         <x-slot:menu>
             <x-dropdown class="w-7" right>
                 <x-slot:trigger>
-                    <x-button icon="o-ellipsis-vertical"
-                        class="bg-transparent border-transparent cursor-pointer hover:bg-gray-900 btn-square btn-sm" />
+                    <x-button icon="o-ellipsis-vertical" class="bg-transparent border-transparent cursor-pointer hover:bg-gray-900 btn-square btn-sm" />
                 </x-slot:trigger>
 
                 <x-menu-sub title="Change State" class="w-8">
@@ -65,14 +67,12 @@ on(['task-created' => 'render', 'task-deleted' => 'render']);
                         <div class="flex gap-4">
                             <div class="flex flex-col join join-vertical">
                                 @foreach ($states as $singleState)
-                                    <input type="radio" :key="$singleState" id="{{ $singleState->id }}"
-                                        value="{{ $singleState->id }}" wire:model="state_id"
-                                        class="capitalize join-item btn input-bordered input bg-base-200s">
+                                <input type="radio" :key="$singleState" id="{{ $singleState->id }}" value="{{ $singleState->id }}" wire:model="state_id" class="capitalize join-item btn input-bordered input bg-base-200s">
                                 @endforeach
                             </div>
                             <div class="flex flex-col gap-2 justify-evenly basis-full">
                                 @foreach ($states as $singleState)
-                                    <label for="{{ $singleState->id }}">{{ $singleState->title }}</label>
+                                <label for="{{ $singleState->id }}">{{ $singleState->title }}</label>
                                 @endforeach
                             </div>
                         </div>
@@ -87,16 +87,13 @@ on(['task-created' => 'render', 'task-deleted' => 'render']);
 
                 {{-- <livewire:tasks.components.task-delete /> --}}
                 <x-menu-item title="Edit" />
-                <x-menu-item title="Delete" wire:click="delete({{ $task->id }})"
-                    wire:confirm="Are you sure to delete the task titled '{{ $task->title }}'"
-                    wire:loading.attr="disabled" class="bg-red-500" />
+                <x-menu-item title="Delete" wire:click="delete({{ $task->id }})" wire:confirm="Are you sure to delete the task titled '{{ $task->title }}'" wire:loading.attr="disabled" class="bg-red-500" />
             </x-dropdown>
         </x-slot:menu>
         <div class="flex items-center justify-between">
             <x-badge value="{{ $date }}" class="badge-neutral" />
             <button class="flex items-center">
-                <div
-                    class="gap-1 text-gray-200 badge badge-primary hover:bg-gray-200 hover:text-gray-700 hover:border-gray-700">
+                <div class="gap-1 text-gray-200 badge badge-primary hover:bg-gray-200 hover:text-gray-700 hover:border-gray-700">
                     <x-icon name="s-play" class="w-4 h-4 " />
                     Start
                 </div>

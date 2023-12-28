@@ -41,20 +41,14 @@ $store = function () {
             ->create($validated);
     }
 
-    $this->toast(
-        type: 'success',
-        title: 'Task created Successfully',
-        description: null, // optional (text)
-        position: 'toast-top toast-end',
-        icon: 'o-information-circle',
-        timeout: 2000,
-    );
+    $this->success('Task Created successfully.');
 
     $this->title = '';
     $this->description = null;
     // $this->end_date = null;
     // $this->category_id = null;
 
+    // $this->dispatch('task-created.{state_id}');
     $this->dispatch('task-created');
 };
 
