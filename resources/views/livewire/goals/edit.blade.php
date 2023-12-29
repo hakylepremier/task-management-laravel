@@ -2,9 +2,12 @@
 
 use App\Models\Goal;
 use App\Models\Stage;
+use Mary\Traits\Toast;
 use Carbon\Carbon;
 
-use function Livewire\Volt\{rules, state, mount};
+use function Livewire\Volt\{rules, state, mount, uses};
+
+uses([Toast::class]);
 
 $getCategories = fn() => ($this->categories = auth()
     ->user()
@@ -25,6 +28,7 @@ state([
     'categories' => $getCategories,
     'category_id' => null,
     'end_date' => null,
+    'goalEditModal' => false,
 ]);
 
 rules([
@@ -55,6 +59,7 @@ $update = function () use ($getCategories) {
     $this->goal->update($validated);
 
     $this->dispatch('goal-updated');
+    $this->success('Goal Updated successfully.');
 };
 
 mount(function (Goal $goal) {
@@ -66,20 +71,17 @@ mount(function (Goal $goal) {
     $this->end_date = $goal->end_date ? Carbon::parse($goal->end_date)->format('Y-m-d') : null;
 });
 ?>
-<aside class="absolute top-0 left-0 z-10 flex items-center justify-center w-full h-full bg-sky-950/50 "
-    x-show="isModalOpen" x-cloak>
-    <article class="p-6 bg-gray-800 border border-white rounded-2xl shrink basis-[30rem]">
+<div>
+    <div @click="$wire.goalEditModal = true"
+        class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-gray-800 uppercase transition duration-150 ease-in-out bg-gray-200 border border-white rounded-md cursor-pointer dark:bg-gray-900 dark:text-white hover:bg-white dark:hover:bg-gray-700 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+        Edit Goal
+    </div>
 
-        <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                {{ __('Edit Goal') }}
-            </h2>
-        </header>
-        <form wire:submit="update" x-show="isModalOpen" x-on:click.away="isModalOpen = false"
-            x-on:goal-updated.window="isModalOpen = false" x-cloak x-transition>
+    <x-modal wire:model="goalEditModal" title="Edit Goal" x-on:goal-updated.window="$wire.goalEditModal = false">
+        <form wire:submit="update" class="flex flex-col gap-3">
             <div>
                 <x-input-label for="title" :value="__('Title')" />
-                <x-text-input wire:model="title" id="title" class="block w-full mt-1" type="text" name="title"
+                <x-text-input wire:model="title" id="title" class="block w-full mt-2" type="text" name="title"
                     required />
                 <x-input-error :messages="$errors->get('title')" class="mt-2" />
             </div>
@@ -87,29 +89,25 @@ mount(function (Goal $goal) {
             <div>
                 <x-input-label for="description" :value="__('Description')" />
                 <textarea wire:model="description"
-                    class="w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"></textarea>
+                    class="w-full mt-2 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"></textarea>
                 <x-input-error :messages="$errors->get('description')" class="mt-2" />
             </div>
             <div>
-                <x-input-label for="category" :value="__('Categories')" />
-                <select id="category" wire:model.lazy="category_id"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="" @if ($category_id === null) selected @endif>No category</option>
-                    @forelse ($categories as $category)
-                        <option value="{{ $category->id }}">{{ $category->title }}</option>
-                    @empty
-                        <div></div>
-                    @endforelse
-                </select>
+                <x-select label="Categories" :options="$categories" :optionLabel="'title'" wire:model="category_id" />
             </div>
             <div>
                 <x-input-label for="end_date" :value="__('End Date')" />
-                <input wire:model="end_date" id="end_date" type="date" value="" name="end_date" />
+                <input wire:model="end_date" id="end_date" type="date" value="" name="end_date"
+                    class="mt-2" />
                 <x-input-error :messages="$errors->get('end_date')" class="mt-2" />
             </div>
-            <x-primary-button class="mt-4">{{ __('Save') }}</x-primary-button>
-            <button wire:click.prevent="" x-on:click="isModalOpen = false"
-                class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest uppercase transition duration-150 ease-in-out bg-gray-800 border border-gray-600 rounded-md dark:bg-gray-900 dark:text-white hover:bg-gray-300 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-200 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">{{ __('Cancel') }}</button>
+            <div>
+                <x-button label="Confirm" class="btn-primary" type="submit" spinner="update" />
+                <x-button label="Cancel" @click="$wire.taskCreateModal = false" />
+            </div>
+            {{-- <x-button class="mt-4">{{ __('Save') }}</x-button>
+            <button wire:click.prevent="" @click="$wire.goalEditModal = false"
+                class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest uppercase transition duration-150 ease-in-out bg-gray-800 border border-gray-600 rounded-md dark:bg-gray-900 dark:text-white hover:bg-gray-300 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-200 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">{{ __('Cancel') }}</button> --}}
         </form>
-    </article>
-</aside>
+    </x-modal>
+</div>

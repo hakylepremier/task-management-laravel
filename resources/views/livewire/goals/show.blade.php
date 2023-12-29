@@ -114,11 +114,7 @@ on([
         @endif
     </section>
 
-    <div x-data="{ openedIndex: false }" class="px-8 mx-auto max-w-7xl">
-        <div x-on:click="isModalOpen = true"
-            class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-gray-800 uppercase transition duration-150 ease-in-out bg-gray-200 border border-white rounded-md cursor-pointer dark:bg-gray-900 dark:text-white hover:bg-white dark:hover:bg-gray-700 focus:bg-gray-700 dark:focus:bg-white active:bg-gray-900 dark:active:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
-            Edit Goal
-        </div>
+    <div class="px-8 mx-auto max-w-7xl">
         <livewire:goals.edit :goal="$goal" />
     </div>
 
