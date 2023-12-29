@@ -5,7 +5,7 @@ use App\Models\Task;
 use App\Models\State;
 use Mary\Traits\Toast;
 
-use function Livewire\Volt\{state, mount, rules, uses, on};
+use function Livewire\Volt\{state, mount, rules, uses};
 
 state([
     'title' => '',
@@ -46,6 +46,7 @@ $update = function () {
 };
 
 mount(function (Task $task, $open = false) {
+    // $test = $task->toArray();
     $this->task = $task;
     $this->title = $task->title;
     $this->description = $task->description;
@@ -56,15 +57,6 @@ mount(function (Task $task, $open = false) {
     $this->user_id = $task->user_id;
     $this->taskUpdateModal = $open;
 });
-
-on([
-    // 'edit-modal-toggle' => function ($task_id) {
-    //     if ($task_id === $this->task->id) {
-    //         $this->taskUpdateModal = true;
-    //     }
-    //     // dd('This is the id' . $task_id);
-    // },
-]);
 
 ?>
 

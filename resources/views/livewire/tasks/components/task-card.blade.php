@@ -14,21 +14,16 @@ state([
     'task' => null,
     'date' => null,
     'updated_at' => null,
-    'test' => 'A',
     'states' => [],
     'state' => null,
     'state_id' => null,
     'taskUpdateModal' => false,
-    // 'state' => [
-    //     'do' => State::firstOrNew(['title' => 'To do']),
-    //     'progress' => State::firstOrNew(['title' => 'In Progress']),
-    //     'done' => State::firstOrNew(['title' => 'Done']),
-    // ],
 ]);
 
 mount(function (Task $task, $states) {
     $this->task = $task;
     $this->updated_at = $task->updated_at;
+    // $test = $task->toArray();
     $this->date = Carbon::parse($task->updated_at)->diffForHumans(now(), [
         'syntax' => CarbonInterface::DIFF_RELATIVE_TO_NOW,
         'options' => Carbon::JUST_NOW | Carbon::ONE_DAY_WORDS | Carbon::TWO_DAY_WORDS,
@@ -36,12 +31,10 @@ mount(function (Task $task, $states) {
 
     $this->state = $task->state;
     $this->state_id = $task->state->id;
-    // $this->states = State::whereIn('title', ['To do', 'In progress', 'Done'])->get();
     $this->states = $states;
 });
 
 $toggleModal = function () {
-    // dd('First Test');
     $this->dispatch('edit-modal-toggle', task_id: $this->task->id);
 };
 
@@ -53,7 +46,6 @@ $delete = function (Task $task) {
     $this->dispatch('task-deleted');
 
     $this->success('Task Deleted successfully.');
-    // $this->disableEditing();
 };
 
 on([
@@ -92,19 +84,9 @@ on([
                         </div>
                         <x-button label="Change" class="mt-2 btn-primary" type="submit" spinner="store" />
                     </form>
-                    {{-- <x-radio label="Select one" :options="$states" wire:model="selectedUser" option-label="title"
-                        class="flex flex-col" /> --}}
-
-                    {{-- <x-menu-item title="Wifi" icon="o-wifi" />
-                    <x-menu-item title="Archives" icon="o-archive-box" /> --}}
                 </x-menu-sub>
 
-                {{-- <livewire:tasks.components.task-delete /> --}}
-                {{-- <x-menu-item title="Edit" @click="$wire.taskUpdateModal = true" spinner /> --}}
-                {{-- <x-button label="Cancel" wire:click.stop="toggleModal" spinner /> --}}
-                {{-- <x-button label="Confirm" class="btn-primary" @click="$wire.toggleModal" spinner="toggleModal"
-                    @click.stop="" /> --}}
-                <livewire:tasks.edit :task="$task->id" />
+                <livewire:tasks.edit :task="$task" />
                 <x-menu-item title="Delete" wire:click="delete({{ $task->id }})"
                     wire:confirm="Are you sure to delete the task titled '{{ $task->title }}'"
                     wire:loading.attr="disabled" class="bg-red-500" />
@@ -120,6 +102,6 @@ on([
                 </div>
             </button>
         </div>
-        {{-- <livewire:tasks.edit :task="$task->id" :$taskUpdateModal /> --}}
+        {{-- <livewire:tasks.edit :task="$task" :$taskUpdateModal /> --}}
     </x-card>
 </div>

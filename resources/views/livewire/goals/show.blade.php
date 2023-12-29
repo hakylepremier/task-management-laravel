@@ -14,11 +14,6 @@ layout('layouts.app');
 //     ->latest()
 //     ->get());
 
-// $getTasks = fn() => ($this->tasks = $this->goal
-//     ->tasks()
-//     ->latest()
-//     ->get());
-
 $dateRemark = function ($my_end_date) {
     $date = Carbon::parse($my_end_date);
     $days = $date->diffInDays(now());
@@ -44,16 +39,11 @@ mount(function (Goal $goal) {
     $this->description = $goal->description ? $goal->description : null;
     $this->category = $goal->category ? $goal->category : null;
     $this->end_date = $goal->end_date ? Carbon::parse($goal->end_date)->format('Y-m-d') : null;
-
-    $this->tasks = $goal
-        ->tasks()
-        ->latest()
-        ->get();
     // $this->dateRemark('2024-01-01');
-    // HACK: makes sure that default states are in the db after mounting
-    $state1 = State::firstOrCreate(['title' => 'To do']);
-    $state2 = State::firstOrCreate(['title' => 'In Progress']);
-    $state3 = State::firstOrCreate(['title' => 'Done']);
+    // makes sure that default states are in the db after mounting
+    // $state1 = State::firstOrCreate(['title' => 'To do']);
+    // $state2 = State::firstOrCreate(['title' => 'In Progress']);
+    // $state3 = State::firstOrCreate(['title' => 'Done']);
 
     // HACK: change this to allow for showing other states in future.
     $this->states = State::whereIn('title', ['To do', 'In Progress', 'Done'])->get();
@@ -74,21 +64,11 @@ state([
     'end_date' => null,
     'num_days_left' => 0,
     'day_warn_color' => 'text-white',
-    'tasks' => [],
-    // 'tasks' => $getTasks,
-    'test' => [
-        'title' => 'yes',
-        'class' => 'bg-red-500',
-    ],
 ]);
 
 on([
     'goal-updated' => function () {
-        // $getGoals;
-        // dd($this->goal->refresh()->toArray());
         $this->goal = $this->goal->refresh();
-        // $refresh;
-        // dd($this->goal->category->toArray());
 
         $this->title = $this->goal->title;
         $this->description = $this->goal->description ? $this->goal->description : null;
@@ -100,12 +80,6 @@ on([
     // 'task-created' => function ($state) {
     //     $this->goal = $this->goal->refresh();
     //     $this->tasks = $this->goal->tasks()->get();
-    // },
-    // 'task-deleted' => function () {
-    //     $this->tasks = $this->goal
-    //         ->tasks()
-    //         ->latest()
-    //         ->get();
     // },
 ]);
 
@@ -146,13 +120,12 @@ on([
             Edit Goal
         </div>
         <livewire:goals.edit :goal="$goal" />
-        {{-- <livewire:tasks.components.task-card /> --}}
     </div>
 
     <main class="flex gap-8 px-8 pb-4 mx-auto mt-6 max-w-7xl">
         @foreach ($states as $state)
             <div class="w-1/3" :key="{{ $state->id }}">
-                <livewire:tasks.components.task-list :goal="$goal" :state="$state->id" :states="$states"
+                <livewire:tasks.components.task-list :goal="$goal" :state="$state" :states="$states"
                     :key="$state->id" />
             </div>
         @endforeach

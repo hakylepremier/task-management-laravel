@@ -21,6 +21,7 @@ mount(function (Goal $goal, State $state, $states) {
         ->tasks()
         ->where('state_id', $state->id)
         ->with('state')
+        ->with('goal')
         ->latest()
         ->get();
 
@@ -32,17 +33,23 @@ mount(function (Goal $goal, State $state, $states) {
 on([
     'task-created' => function () {
         $this->goal = $this->goal->refresh();
-        $this->tasks = $this->goal->tasks()->where('state_id', $this->state->id)->latest()->get();
-        // dump($state);
+        $this->tasks = $this->goal
+            ->tasks()
+            ->where('state_id', $this->state->id)
+            ->with('state')
+            ->with('goal')
+            ->latest()
+            ->get();
     },
-    // 'task-created.{state.id}' => function () {
-    //     $this->goal = $this->goal->refresh();
-    //     $this->tasks = $this->goal->tasks()->where('state_id', $this->state->id)->latest()->get();
-    //     // dump($state);
-    // },
     'task-deleted' => function () {
         $this->goal = $this->goal->refresh();
-        $this->tasks = $this->goal->tasks()->where('state_id', $this->state->id)->latest()->get();
+        $this->tasks = $this->goal
+            ->tasks()
+            ->where('state_id', $this->state->id)
+            ->with('state')
+            ->with('goal')
+            ->latest()
+            ->get();
     },
 ]);
 
@@ -55,9 +62,9 @@ on([
     </div>
     <section class="flex flex-col gap-4">
         @forelse ($tasks as $task)
-        <livewire:tasks.components.task-card :task="$task" :states="$states" wire:key="{{ $task->id }}" />
+            <livewire:tasks.components.task-card :task="$task" :states="$states" wire:key="{{ $task->id }}" />
         @empty
-        <p class="text-center">No task available</p>
+            <p class="text-center">No task available</p>
         @endforelse
     </section>
 </div>
