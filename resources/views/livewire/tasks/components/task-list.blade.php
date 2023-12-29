@@ -13,17 +13,19 @@ state([
     'goal' => null,
 ]);
 
+$getTasks = fn () => ($this->tasks = $this->goal
+    ->tasks()
+    ->where('state_id', $this->state->id)
+    ->with('state')
+    ->with('goal')
+    ->orderBy('updated_at', 'desc')
+    ->get());
+
 mount(function (Goal $goal, State $state, $states) {
     $this->goal = $goal;
     $this->state = $state;
     $test = $state->id;
-    $this->tasks = $goal
-        ->tasks()
-        ->where('state_id', $state->id)
-        ->with('state')
-        ->with('goal')
-        ->latest()
-        ->get();
+    $this->getTasks();
 
     $this->states = $states;
     $test2 = $this->tasks->toArray();
@@ -33,23 +35,22 @@ mount(function (Goal $goal, State $state, $states) {
 on([
     'task-created' => function () {
         $this->goal = $this->goal->refresh();
-        $this->tasks = $this->goal
-            ->tasks()
-            ->where('state_id', $this->state->id)
-            ->with('state')
-            ->with('goal')
-            ->latest()
-            ->get();
+        $this->getTasks();
     },
     'task-deleted' => function () {
         $this->goal = $this->goal->refresh();
-        $this->tasks = $this->goal
-            ->tasks()
-            ->where('state_id', $this->state->id)
-            ->with('state')
-            ->with('goal')
-            ->latest()
-            ->get();
+        $this->getTasks();
+    },
+    'task-state-updated' => function () {
+        $this->goal = $this->goal->refresh();
+        $this->getTasks();
+        // $this->tasks = $this->goal
+        //     ->tasks()
+        //     ->where('state_id', $this->state->id)
+        //     ->with('state')
+        //     ->with('goal')
+        //     ->latest()
+        //     ->get();
     },
 ]);
 
@@ -62,9 +63,9 @@ on([
     </div>
     <section class="flex flex-col gap-4">
         @forelse ($tasks as $task)
-            <livewire:tasks.components.task-card :task="$task" :states="$states" wire:key="{{ $task->id }}" />
+        <livewire:tasks.components.task-card :task="$task" :states="$states" wire:key="{{ $task->id }}" />
         @empty
-            <p class="text-center">No task available</p>
+        <p class="text-center">No task available</p>
         @endforelse
     </section>
 </div>

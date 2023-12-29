@@ -38,6 +38,16 @@ $toggleModal = function () {
     $this->dispatch('edit-modal-toggle', task_id: $this->task->id);
 };
 
+$updateState = function () {
+    $validated = $this->authorize('update', $this->task);
+    $newState = $this->state_id;
+
+    $this->task->update(['state_id' => $newState]);
+
+    $this->dispatch('task-state-updated');
+    $this->success('Task State Updated successfully.');
+};
+
 $delete = function (Task $task) {
     $this->authorize('delete', $task);
 
@@ -67,7 +77,7 @@ on([
                 </x-slot:trigger>
 
                 <x-menu-sub title="Change State" class="w-8">
-                    <form>
+                    <form wire:submit="updateState">
                         <div class="flex gap-4">
                             <div class="flex flex-col join join-vertical">
                                 @foreach ($states as $singleState)
