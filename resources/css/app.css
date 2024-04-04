@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    details[open] .detail-open {
+        @apply invisible;
+    }
+
+    details[open] .detail-close {
+        @apply visible;
+    }
+
+    details .detail-close {
+        @apply invisible;
+    }
+
+    details .detail-open {
+        @apply visible;
+    }
+}

@@ -12,8 +12,14 @@ export default {
 
     theme: {
         extend: {
+            backgroundImage: {
+                ttuPattern: "url('./resources/images/bg-image.webp')",
+            },
             fontFamily: {
                 sans: ["Figtree", ...defaultTheme.fontFamily.sans],
+                inter: ['"Inter"', "sans-serif"],
+                poppins: ['"Poppins"', "sans-serif"],
+                merriweather: ['"Merriweather"', "serif"],
             },
         },
     },
