@@ -31,12 +31,10 @@ $deleteUser = function (Logout $logout) {
         </p>
     </header>
 
-    <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-    >{{ __('Delete Account') }}</x-danger-button>
+    <x-danger-button x-data=""
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')">{{ __('Delete Account') }}</x-danger-button>
 
-    <x-modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
+    <x-modal-profile name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
         <form wire:submit="deleteUser" class="p-6">
 
             <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -50,14 +48,8 @@ $deleteUser = function (Logout $logout) {
             <div class="mt-6">
                 <x-input-label for="password" value="{{ __('Password') }}" class="sr-only" />
 
-                <x-text-input
-                    wire:model="password"
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="{{ __('Password') }}"
-                />
+                <x-text-input wire:model="password" id="password" name="password" type="password"
+                    class="mt-1 block w-3/4" placeholder="{{ __('Password') }}" />
 
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>
@@ -72,5 +64,5 @@ $deleteUser = function (Logout $logout) {
                 </x-danger-button>
             </div>
         </form>
-    </x-modal>
+    </x-modal-profile>
 </section>
