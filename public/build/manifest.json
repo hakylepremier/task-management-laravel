@@ -1,8 +1,12 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-691aae54.css",
+    "file": "assets/app-de804a7e.css",
     "isEntry": true,
     "src": "resources/css/app.css"
+  },
+  "resources/images/bg-image.webp": {
+    "file": "assets/bg-image-d73dee6d.webp",
+    "src": "resources/images/bg-image.webp"
   },
   "resources/js/app.js": {
     "file": "assets/app-22752a76.js",
