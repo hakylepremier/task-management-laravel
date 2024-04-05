@@ -2,20 +2,24 @@
     $videoAdded = false;
     $pendingFeatures = [
         [
-            'name' => 'Get recommendations based on the thinkers you follow',
-            'description' => 'Yet be added',
+            'name' => 'Build an appropriate Homepage to replace this one.',
+            'description' =>
+                'This homepage is a placeholder so I intend to design an appropriate homepage for this website.',
         ],
         [
-            'name' => 'Get recommendations based on your liked thoughts',
-            'description' => 'Yet be added',
+            'name' => 'Adding Drag and drop Functionality to task lists',
+            'description' =>
+                "Currently to change a task's state I used a select but I will change it to allow for drag and drop like other Kanban boards for better usability.",
         ],
         [
-            'name' => 'Complete the new UI',
-            'description' => 'Yet be added',
+            'name' => 'A time tracker for each task',
+            'description' =>
+                'I will be adding a time tracking functionality for each task so you can get insight into how long you spend on specific tasks',
         ],
         [
-            'name' => 'Add chat functionality',
-            'description' => 'Yet be added',
+            'name' => 'Add graphs and charts for tasks and goals on admin page',
+            'description' =>
+                'These charts and graphs will give more insight into how your tasks and goals are progressing.',
         ],
     ];
 
@@ -45,20 +49,20 @@
 
     $completedFeatures = [
         [
-            'name' => 'Get recommendations based on the thinkers you follow',
-            'description' => 'Yet be added',
+            'name' => 'Can add Goals on the website',
+            'description' => "Goal represent a project you're working on or a goal you have.",
         ],
         [
-            'name' => 'Get recommendations based on your liked thoughts',
-            'description' => 'Yet be added',
+            'name' => 'Goals can have specific tasks associated with them',
+            'description' => 'Tasks are tied to each Goal.',
         ],
         [
-            'name' => 'Complete the new UI',
-            'description' => 'Yet be added',
+            'name' => 'Tasks can be in specific states(To do, In Progress, Done)',
+            'description' => 'Changing the state gives lets you track where the task is in the process of completion.',
         ],
         [
-            'name' => 'Add chat functionality',
-            'description' => 'Yet be added',
+            'name' => 'Can put Goals into specific Categories',
+            'description' => 'This just allows you to Categorize your tasks',
         ],
     ];
 @endphp
