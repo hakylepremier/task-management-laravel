@@ -18,12 +18,24 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        if (State::count() < 3) {
+            $states = [
+                "To do",
+                "In Progress",
+                "Done"
+            ];
+
+            foreach ($states as $state) {
+                $mystate = \App\Models\State::firstOrCreate([
+                    'title' => $state,
+                ]);
+            }
+        }
+        $state_id = $this->faker->unique()->randomElement(State::all())['id'];
         return [
             'title' => fake()->realText(30),
             'description' => fake()->realTextBetween(100, 200),
-            'state_id' => State::firstOrCreate([
-                'title' => 'To do'
-            ])
+            'state_id' => $state_id
         ];
     }
 }

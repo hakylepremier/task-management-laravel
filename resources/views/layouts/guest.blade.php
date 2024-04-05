@@ -42,7 +42,7 @@
                     </div>
                 </summary>
                 <p class="dark:text-white">Email: dummy@dummy.com</p>
-                <p class="dark:text-white">Password: dummy123</p>
+                <p class="dark:text-white">Password: password</p>
             </details>
         @endif
     </div>

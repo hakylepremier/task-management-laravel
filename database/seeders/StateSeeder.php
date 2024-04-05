@@ -12,6 +12,16 @@ class StateSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $states = [
+            "To do",
+            "In Progress",
+            "Done"
+        ];
+
+        foreach ($states as $state) {
+            $mystate = \App\Models\State::firstOrCreate([
+                'title' => $state,
+            ]);
+        }
     }
 }
