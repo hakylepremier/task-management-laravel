@@ -4,12 +4,7 @@ use function Livewire\Volt\{layout, state, on, rules};
 
 layout('layouts.app');
 
-$getGoals = fn() => ($this->goals = auth()
-    ->user()
-    ->goals()
-    ->with('category')
-    ->latest()
-    ->get());
+$getGoals = fn() => ($this->goals = auth()->user()->goals()->with('category')->latest()->get());
 
 state([
     'goals' => $getGoals,
@@ -23,13 +18,6 @@ on([
     'goal-created' => $getGoals,
     'goal-deleted' => function () use ($getGoals) {
         $getGoals;
-        // $test = auth()
-        //     ->user()
-        //     ->goals()
-        //     ->with('category')
-        //     ->latest()
-        //     ->get();
-        // dd($test);
     },
 ]);
 ?>
@@ -42,20 +30,9 @@ on([
     </x-slot>
 
     <div x-data="{ openedIndex: false }" class="px-8 py-6 mx-auto max-w-7xl">
-        <div @click="openedIndex = !openedIndex" class="inline-block border text-gray-200 p-4 cursor-pointer select-none">
-            Create Goal
-        </div>
-        {{-- <template x-show="openedIndex"> --}}
-        <div x-show.transition.in.duration.800ms="openedIndex" x-cloak class="border p-4">
-            <livewire:goals.create />
-        </div>
-        {{-- </template> --}}
-    </div>
-
-    {{-- <section class="px-4 py-6 mx-auto max-w-7xl">
         <livewire:goals.create />
-    </section> --}}
-    <section class="w-full px-4 pb-4 mx-auto mb-12 border-red-400 xl:max-w-7xl xl:mb-0 grid grid-cols-1 md:grid-cols-4">
+    </div>
+    <section class="grid w-full grid-cols-1 px-4 pb-4 mx-auto mb-12 border-red-400 xl:max-w-7xl xl:mb-0 md:grid-cols-4">
         @forelse ($goals as $goal)
             <livewire:goals.goal :goal="$goal" :key="$goal->id">
             @empty

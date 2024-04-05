@@ -2,13 +2,9 @@
 
 use App\Models\Stage;
 
-use function Livewire\Volt\{rules, state};
+use function Livewire\Volt\{rules, state, mount};
 
-$getCategories = fn() => ($this->categories = auth()
-    ->user()
-    ->categories()
-    ->latest()
-    ->get());
+$getCategories = fn() => ($this->categories = auth()->user()->categories()->latest()->get());
 
 state([
     'title' => '',
@@ -16,6 +12,7 @@ state([
     'categories' => $getCategories,
     'category_id' => null,
     'end_date' => null,
+    'goalCreateModal' => false,
 ]);
 
 rules([
@@ -30,10 +27,7 @@ $store = function () use ($getCategories) {
     $stage = ['stage_id' => Stage::firstOrCreate(['title' => 'Processing'])->id];
     // $validated->merge(['stage_id' => Stage::firstOrCreate(['title' => 'Processing'])->id]);
     $goal = array_merge($validated, $stage);
-    auth()
-        ->user()
-        ->goals()
-        ->create($goal);
+    auth()->user()->goals()->create($goal);
 
     $this->title = '';
     $this->description = null;
@@ -54,42 +48,28 @@ $store = function () use ($getCategories) {
 ?>
 
 <div>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-            {{ __('Create Goal') }}
-        </h2>
-    </header>
-    <form wire:submit="store">
-        <div>
-            <x-input-label for="title" :value="__('Title')" />
-            <x-text-input wire:model="title" id="title" class="block w-full mt-1" type="text" name="title"
-                required />
-            <x-input-error :messages="$errors->get('title')" class="mt-2" />
-        </div>
+    <div @click="$wire.goalCreateModal = true"
+        class="inline-block px-4 py-2 text-sm text-gray-100 transition duration-300 ease-in-out bg-indigo-600 rounded-md cursor-pointer select-none hover:text-white hover:bg-indigo-500">
+        Create Goal
+    </div>
 
-        <div>
-            <x-input-label for="description" :value="__('Description')" />
-            <textarea wire:model="description"
-                class="w-full border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600"></textarea>
-            <x-input-error :messages="$errors->get('description')" class="mt-2" />
-        </div>
-        <div>
-            <x-input-label for="category" :value="__('Categories')" />
-            <select id="category" wire:model="category_id"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                <option selected>No category</option>
-                @forelse ($categories as $category)
-                    <option value="{{ $category->id }}">{{ $category->title }}</option>
-                @empty
-                    <div></div>
-                @endforelse
-            </select>
-        </div>
-        <div>
-            <x-input-label for="end_date" :value="__('End Date')" />
-            <input wire:model="end_date" id="end_date" type="date" value="" name="end_date" />
-            <x-input-error :messages="$errors->get('end_date')" class="mt-2" />
-        </div>
-        <x-primary-button class="mt-4">{{ __('Save') }}</x-primary-button>
-    </form>
+    {{-- <x-button icon="m-plus" class="text-gray-900 bg-gray-200 btn-circle btn-sm hover:bg-gray-700 hover:text-gray-200"
+        @click="$wire.goalCreateModal = true" /> --}}
+
+    <x-modal wire:model="goalCreateModal" title="Create Goal" x-on:task-created.window="$wire.goalCreateModal = false">
+        <x-form wire:submit="store">
+            <x-input label="Title" wire:model="title" />
+            <x-textarea label="Description" wire:model="description" hint="Max 1000 chars" rows="4" />
+
+            <x-select label="Category" icon="o-squares-2x2" option-value="id" option-label="title"
+                placeholder="Select a Category" :options="$categories" wire:model="category_id" />
+
+            <x-datetime label="End Date" wire:model="end_date" icon="o-calendar" />
+
+            <x-slot:actions>
+                <x-button label="Cancel" @click="$wire.goalCreateModal = false" />
+                <x-button label="Confirm" class="btn-primary" type="submit" spinner="store" />
+            </x-slot:actions>
+        </x-form>
+    </x-modal>
 </div>
